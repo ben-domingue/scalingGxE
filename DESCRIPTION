@@ -1,0 +1,11 @@
+Package: manyFE
+Title: Meant to compute large number of fixed effects.
+Version: 0.0.1
+Date: 2012-08-24
+Author: Ben Domingue <ben.domingue@gmail.com>
+Maintainer: Ben Domingue <ben.domingue@gmail.com>
+Depends: R (>= 2.1.0), 
+Suggests: 
+Description: For many linear models, a large number of fixed effects are desired. This is a more efficient way of computing them compared to using lm(). Uses method from Guimaraes and Portugal.
+LazyData: No
+License: GPL (>= 2)
