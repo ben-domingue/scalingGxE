@@ -1,5 +1,9 @@
 #this performs the stuff explained in section 2.1 of guimaraes and portugal
 manyFE<-function(x,f,fe.name="fe1",id.name="tch_id1",tol=NULL,verb=TRUE,model.keep=FALSE) { 
+  #making sure that the fe column is present and in the formula.
+  if (!(fe.name %in% all.vars(f))) update.formula(f,paste(".~.+",fe.name))->f
+  if (!(fe.name %in% names(x))) 1->x[[fe.name]]
+  #
   c(id.name,all.vars(f))->nam
   x[,names(x) %in% nam]->x2
   x2[rowSums(is.na(x2))==0,]->x2
@@ -13,7 +17,7 @@ manyFE<-function(x,f,fe.name="fe1",id.name="tch_id1",tol=NULL,verb=TRUE,model.ke
   while (abs(dif)>tol) {
     grep(id.name,names(x2))->id.index
     grep(fe.name,names(x2))->fe.index
-    grep(all.vars(f)[1],names(x2))->outcome.index
+    grep(paste("^",all.vars(f)[1],"$",sep=""),names(x2))->outcome.index
     lm(f,data=x2)->m
     rss2<-rss1
     sum(resid(m)^2)->rss1
