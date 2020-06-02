@@ -1,4 +1,4 @@
 export(
-	"fun1","fun2"
+	"ratio.test","xi.test","sim.sc"
 )
 

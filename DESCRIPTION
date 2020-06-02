@@ -1,11 +1,9 @@
-Package: scaling_gxe
-Title: A package to estimate the heteroscedastic GxE model and to test for scaling.
-Version: 0.0.1
-Date: 2020-06-02
-Author: Ben Domingue <ben.domingue@gmail.com>
-Maintainer: Ben Domingue <ben.domingue@gmail.com>
-Depends: R (>= 3.6.3), 
-Suggests: 
-Description: [to be updated].
-LazyData: No
-License: GPL (>= 2)
+Package: scalingGxE
+Title: Testing for Scaling GxE
+Version: 0.1
+Authors@R: person("Ben", "Domingue", email = "ben.domingue@gmail.com",
+                  role = c("aut", "cre"))
+Description: [forthcoming]
+Depends: R (>= 3.1.0)
+License:
+LazyData: true
