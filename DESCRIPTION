@@ -1,11 +1,11 @@
-Package: manyFE
-Title: Meant to compute large number of fixed effects.
+Package: scaling_gxe
+Title: A package to estimate the heteroscedastic GxE model and to test for scaling.
 Version: 0.0.1
-Date: 2012-08-24
+Date: 2020-06-02
 Author: Ben Domingue <ben.domingue@gmail.com>
 Maintainer: Ben Domingue <ben.domingue@gmail.com>
-Depends: R (>= 2.1.0), 
+Depends: R (>= 3.6.3), 
 Suggests: 
-Description: For many linear models, a large number of fixed effects are desired. This is a more efficient way of computing them compared to using lm(). Uses method from Guimaraes and Portugal.
+Description: [to be updated].
 LazyData: No
 License: GPL (>= 2)
