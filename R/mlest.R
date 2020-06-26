@@ -40,8 +40,9 @@ mlest<-function(df,
         return(vcov)
     }
     ##
-    ll<-function(pars,df,pr,xx) { #this is the likelihood function to be maximized 
+    ll<-function(pars,df,xx) { #this is the likelihood function to be maximized 
         for (nm in names(pars)) assign(nm,pars[[nm]])
+        beta<-pars[-(1:5)]
         mu<-m*df$E+
             pi0*df$g+
             pi1*df$g*df$E+
@@ -56,6 +57,7 @@ mlest<-function(df,
     }
     gr<-function(pars,df,xx) { #this is the gradient
         for (nm in names(pars)) assign(nm,pars[[nm]])
+        beta<-pars[-(1:5)]
         mu<-m*df$E+
             pi0*df$g+
             pi1*df$g*df$E+
@@ -69,8 +71,10 @@ mlest<-function(df,
         dfdsigma <- (df$y - mu)^2*sig^(-3) - sig^(-1)
         dfdlambda0 <- sum(dfdsigma)
         dfdlambda1 <- sum(dfdsigma*df$E)
+        dfdbeta<-rep(0,ncol(xx))
+        for (i in 1:ncol(xx)) dfdbeta[i]<-sum(dfdmu*xx[,i])
         ##
-        -1*c(dfdm,dfdpi0,dfdpi1,dfdlambda0,dfdlambda1,beta)
+        -1*c(dfdm,dfdpi0,dfdpi1,dfdlambda0,dfdlambda1,dfdbeta)
     }
     ##working out covariates
     if (length(covars)>0) {
@@ -79,7 +83,7 @@ mlest<-function(df,
     } else xx<-matrix(rep(1,nrow(df)),ncol=1)
     nb<-ncol(xx)
     ##
-    pars<-list(m=rnorm(1,sd=.05),pi0=rnorm(1,sd=.05),pi1=rnorm(1,sd=.05),lambda0=1+runif(1),lambda1=runif(1,max=.2),beta=rep(0,nb))
+    pars<-c(m=rnorm(1,sd=.05),pi0=rnorm(1,sd=.05),pi1=rnorm(1,sd=.05),lambda0=1+runif(1),lambda1=runif(1,max=.2),beta=rep(0,nb))
     fit<-optim(pars,ll,
                gr=gr,
                df=df,
