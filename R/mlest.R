@@ -1,6 +1,7 @@
 
 mlest<-function(df,
                 hess=FALSE, #if FALSE, compute empirical hessian
+                covars=NULL, #names of covariates
                 ctl.list=list(maxit=1000,reltol=sqrt(.Machine$double.eps)/1000)
                 ) {
     ##
@@ -39,11 +40,12 @@ mlest<-function(df,
         return(vcov)
     }
     ##
-    ll<-function(pars,df,pr) { #this is the likelihood function to be maximized 
+    ll<-function(pars,df,pr,xx) { #this is the likelihood function to be maximized 
         for (nm in names(pars)) assign(nm,pars[[nm]])
         mu<-m*df$E+
             pi0*df$g+
-            pi1*df$g*df$E
+            pi1*df$g*df$E+
+            as.numeric(as.matrix(xx) %*% matrix(beta,ncol=1))
         sig<-sqrt((lambda0+df$E*lambda1)^2)
         ##
         d<-dnorm(df$y,mean=mu,sd=sig,log=TRUE) #sqrt(lambda0^2+df$E^2*lambda1^2+2*lambda0*lambda1*df$E))
@@ -52,11 +54,12 @@ mlest<-function(df,
         #print(tr)
         tr
     }
-    gr<-function(pars,df) { #this is the gradient
+    gr<-function(pars,df,xx) { #this is the gradient
         for (nm in names(pars)) assign(nm,pars[[nm]])
         mu<-m*df$E+
             pi0*df$g+
-            pi1*df$g*df$E
+            pi1*df$g*df$E+
+            as.numeric(as.matrix(xx) %*% matrix(beta,ncol=1))
         sig<-sqrt((lambda0+df$E*lambda1)^2)
         ##
         dfdmu<-(df$y-mu)*sig^(-2)
@@ -66,12 +69,21 @@ mlest<-function(df,
         dfdsigma <- (df$y - mu)^2*sig^(-3) - sig^(-1)
         dfdlambda0 <- sum(dfdsigma)
         dfdlambda1 <- sum(dfdsigma*df$E)
-        -1*c(dfdm,dfdpi0,dfdpi1,dfdlambda0,dfdlambda1)
+        ##
+        -1*c(dfdm,dfdpi0,dfdpi1,dfdlambda0,dfdlambda1,beta)
     }
-    pars<-list(m=rnorm(1,sd=.05),pi0=rnorm(1,sd=.05),pi1=rnorm(1,sd=.05),lambda0=1+runif(1),lambda1=runif(1,max=.2))
+    ##working out covariates
+    if (length(covars)>0) {
+        xx<-df[,covars]
+        xx<-cbind(rep(1,nrow(xx)),xx) #for intercept
+    } else xx<-matrix(rep(1,nrow(df)),ncol=1)
+    nb<-ncol(xx)
+    ##
+    pars<-list(m=rnorm(1,sd=.05),pi0=rnorm(1,sd=.05),pi1=rnorm(1,sd=.05),lambda0=1+runif(1),lambda1=runif(1,max=.2),beta=rep(0,nb))
     fit<-optim(pars,ll,
                gr=gr,
                df=df,
+               xx=xx,
                control=ctl.list,
                hessian=hess
                )
