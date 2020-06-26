@@ -1,8 +1,8 @@
 
-ratio.test<-function(df,
-                     hess=FALSE, #if FALSE, compute empirical hessian
-                     ctl.list=list(maxit=1000,reltol=sqrt(.Machine$double.eps)/1000)
-                     ) {
+mlest<-function(df,
+                hess=FALSE, #if FALSE, compute empirical hessian
+                ctl.list=list(maxit=1000,reltol=sqrt(.Machine$double.eps)/1000)
+                ) {
     ##
     anal_vcov <- function(pars, df){
         neg_hess <- function(pars,df) { #computes the negative hessian

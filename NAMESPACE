@@ -1,4 +1,4 @@
 export(
-	"ratio.test","xi.test","sim.sc","sim.data"
+	"mlest","xi.test","sim.data"
 )
 

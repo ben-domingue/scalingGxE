@@ -5,7 +5,7 @@
     set.seed(8675309)
     E<-function() rnorm(5000)
     df<-sim.sc(E=E)
-    est<-ratio.test(df,hess=FALSE)
+    est<-mlest(df,hess=FALSE)
     xi.test(est)
     ##note we fail to reject the null
     ##############################################################
@@ -20,6 +20,6 @@
     }
     E<-function() rnorm(8000)
     df<-simdata(E=E)
-    est<-ratio.test(df,hess=TRUE)
+    est<-mlest(df,hess=TRUE)
     xi.test(est)
     ##note we reject the null
