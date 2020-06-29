@@ -4,7 +4,7 @@
     ##example wherein the scaling model is the true model
     set.seed(8675309)
     E<-function() rnorm(5000)
-    df<-sim.sc(E=E)
+    df<-simdata(E=E)
     est<-mlest(df,hess=FALSE)
     xi.test(est)
     ##note we fail to reject the null
