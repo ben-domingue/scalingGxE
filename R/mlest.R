@@ -5,13 +5,16 @@ mlest<-function(df,
                 ctl.list=list(maxit=1000,reltol=sqrt(.Machine$double.eps)/1000)
                 ) {
     ##
-    anal_vcov <- function(pars, df){
-        neg_hess <- function(pars,df) { #computes the negative hessian
+    anal_vcov <- function(pars, df,xx){
+        neg_hess <- function(pars,df,xx) { #computes the negative hessian
             for (nm in names(pars)) assign(nm,pars[[nm]])
-            mu <- m*df$E + pi0*df$g + pi1*df$g*df$E
+            beta<-pars[-(1:5)]
+            mu <- m*df$E + pi0*df$g + pi1*df$g*df$E+
+                as.numeric(as.matrix(xx) %*% matrix(beta,ncol=1))
             sig <- sqrt((lambda0 + df$E*lambda1)^2)
             ##
-            H <- matrix(data=NA, nrow=5, ncol=5)
+            nn<-length(pars)
+            H <- matrix(data=NA, nrow=nn, ncol=nn)
             # second partials wrt beta_0
             H[1,1] <- sum(df$E^2*sig^(-2))
             H[1,2] <- H[2,1] <- sum(df$E*df$g*sig^(-2))
@@ -32,9 +35,26 @@ mlest<-function(df,
             H[4,5] <- H[5,4] <- sum(3*df$E*(df$y - mu)^2*sig^(-4) - df$E*sig^(-2))
             # second partials wrt lambda_1
             H[5,5] <- sum(3*df$E^2*(df$y - mu)^2*sig^(-4) - df$E^2*sig^(-2))
+            ##covars
+            for (i in 6:nn) {
+                ii<-i-5
+                H[i,i] <- sum(xx[,ii]^2*sig^(-2))
+                ##for the main pars
+                H[i,2] <- H[2,i] <- sum(xx[,ii]*df$g*sig^(-2))
+                H[i,3] <- H[3,i] <- sum(xx[,ii]^2*df$g*sig^(-2))
+                H[i,4] <- H[4,i] <- 2*sum(xx[,ii]*(df$y - mu)*sig^(-3))
+                H[i,5] <- H[5,i] <- 2*sum(xx[,ii]^2*(df$y - mu)*sig^(-3))
+            }
+            vals<-c(1,6:nn)
+            xx2<-cbind(df$E,xx)
+            for (i in 1:(length(vals)-1)) for (j in (i+1):length(vals)){
+                                              ival<-vals[i]
+                                              jval<-vals[j]
+                                              H[ival,jval] <- H[jval,ival] <- sum(-1*xx2[,i]*xx2[,j]*(df$y - mu)*sig^(-2))
+                                          }
             return(H)
         }
-        H <- neg_hess(pars, df)
+        H <- neg_hess(pars, df,xx)
         vcov <- solve(H)
         rownames(vcov) <- colnames(vcov) <- names(pars)
         return(vcov)
@@ -95,7 +115,7 @@ mlest<-function(df,
     if (hess) { #see https://stats.stackexchange.com/questions/27033/in-r-given-an-output-from-optim-with-a-hessian-matrix-how-to-calculate-paramet
         vc<-solve(fit$hessian) #note, no -1 given that i am doing that directly in the above
     } else {
-        test<-try(vc<-anal_vcov(est,df))
+        test<-try(vc<-anal_vcov(est,df,xx))
         test<-class(test)
         count<-1
         while (test=='try-error' & count<50) {
