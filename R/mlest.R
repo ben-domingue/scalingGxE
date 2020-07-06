@@ -50,7 +50,7 @@ mlest<-function(df,
             for (i in 1:(length(vals)-1)) for (j in (i+1):length(vals)){
                                               ival<-vals[i]
                                               jval<-vals[j]
-                                              H[ival,jval] <- H[jval,ival] <- sum(-1*xx2[,i]*xx2[,j]*(df$y - mu)*sig^(-2))
+                                              H[ival,jval] <- H[jval,ival] <- sum(xx2[,i]*xx2[,j]*(df$y - mu)*sig^(-2))
                                           }
             return(H)
         }
