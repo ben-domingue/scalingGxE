@@ -1,5 +1,12 @@
 
 mlest<-function(df,
+                start.pars=list(
+                    m=rnorm(1,sd=.05),
+                    pi0=rnorm(1,sd=.05),
+                    pi1=rnorm(1,sd=.05),
+                    lambda0=1+runif(1),
+                    lambda1=runif(1,max=.2)
+                ),
                 hess=FALSE, #if FALSE, compute empirical hessian
                 ctl.list=list(maxit=1000,reltol=sqrt(.Machine$double.eps)/1000)
                 ) {
@@ -68,8 +75,8 @@ mlest<-function(df,
         dfdlambda1 <- sum(dfdsigma*df$E)
         -1*c(dfdm,dfdpi0,dfdpi1,dfdlambda0,dfdlambda1)
     }
-    pars<-list(m=rnorm(1,sd=.05),pi0=rnorm(1,sd=.05),pi1=rnorm(1,sd=.05),lambda0=1+runif(1),lambda1=runif(1,max=.2))
-    fit<-optim(pars,ll,
+    ##
+    fit<-optim(par=start.pars,ll,
                gr=gr,
                df=df,
                control=ctl.list,
