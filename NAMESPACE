@@ -1,4 +1,4 @@
 export(
-	"mlest","xi.test","sim.data"
+	"mlest","xi.test","sim.data","mlest4"
 )
 
